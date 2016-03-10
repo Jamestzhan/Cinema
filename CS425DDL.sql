@@ -1,0 +1,179 @@
+CREATE TABLE Person (
+	ID 		INT,
+	name 		VARCHAR(100),
+	birthDate	DATE,
+	gender		VARCHAR(1),
+  PRIMARY KEY (ID),
+	CHECK(gender IN ('M','F'))
+);
+
+CREATE TABLE Director (
+	ID		INT,
+	photo		VARCHAR(256),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES Person
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Writer (
+	ID		INT,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES Person
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Actor (
+	ID		INT,
+	photo		VARCHAR(256),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES Person
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Movie (
+	title		VARCHAR(256),
+	year		NUMERIC(4,0),
+	length		NUMERIC(5,2),
+	PGRating	VARCHAR(5),
+	poster		VARCHAR(256),
+	PRIMARY KEY (title),
+	CHECK(PGRating IN ('G','PG','PG-13','R','NC-17'))
+);
+
+CREATE TABLE Genre (
+	movie		VARCHAR(256),
+	genre		VARCHAR(20),
+ 	PRIMARY KEY (movie, genre),
+	FOREIGN KEY (movie) REFERENCES Movie 
+	ON DELETE CASCADE
+);
+
+
+CREATE TABLE Direct (
+	directorID	INT,
+	movie		VARCHAR(256),
+	PRIMARY KEY (directorID, movie),
+	FOREIGN KEY (directorID) REFERENCES Director
+	ON DELETE CASCADE,
+	FOREIGN KEY (movie) REFERENCES Movie
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Write (
+	writerID	INT,
+	movie		VARCHAR(256),
+	PRIMARY KEY (writerID, movie),
+	FOREIGN KEY (writerID) REFERENCES Writer
+	ON DELETE CASCADE,
+	FOREIGN KEY (movie) REFERENCES Movie
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Role (
+	name		VARCHAR(128),
+	playerID	INT,
+	movie		VARCHAR(256),
+	PRIMARY KEY (name, playerID, movie),
+	FOREIGN KEY (playerID) 	 REFERENCES Actor
+	ON DELETE CASCADE,
+	FOREIGN KEY (movie) 	 REFERENCES Movie
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Room (
+	roomNumber	NUMERIC(4,0),
+	capacity	NUMERIC(4,0),
+	PRIMARY KEY (roomNumber)
+);
+
+CREATE TABLE Showing (
+	startTime	TIMESTAMP,
+	inRoom		NUMERIC(4,0),
+	movie		VARCHAR(256),
+	PRIMARY KEY (startTime, inRoom),
+	FOREIGN KEY (inRoom) 	REFERENCES Room
+	ON DELETE CASCADE,
+	FOREIGN KEY (movie) 	REFERENCES Movie
+	ON DELETE CASCADE
+);
+
+CREATE TABLE CinemaUser (
+	ID		INT,
+	name		VARCHAR(256),
+	PRIMARY KEY (ID)
+);
+
+CREATE TABLE Member (
+	ID		INT,
+	loginID		VARCHAR(64),
+	password	VARCHAR(64),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES CinemaUser
+	ON DELETE CASCADE
+);
+
+CREATE TABLE PayMethod (
+	member	INT,
+	BankAccountNo	CHAR(16),
+	PRIMARY KEY (member, BankAccountNo),
+	FOREIGN KEY (member) REFERENCES Member
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Staff (
+	ID		INT,
+	employeeID	INT,
+	password	VARCHAR(64),
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ID) REFERENCES CinemaUser
+	ON DELETE CASCADE
+);
+
+CREATE TABLE Ticket (
+	startTime	TIMESTAMP,
+	room		NUMERIC(4,0),
+	member		INT,
+	price		NUMERIC(5,2),
+	PRIMARY KEY (startTime, room, member),
+	FOREIGN KEY (startTime, room)	REFERENCES Showing
+	ON DELETE CASCADE,
+	FOREIGN KEY (member)		REFERENCES Member
+	ON DELETE CASCADE
+);
+
+CREATE TABLE RateMovie (
+	fromMember		INT,
+	toMovie		VARCHAR(256),
+	rate		NUMERIC(2,0),
+	PRIMARY KEY (fromMember, toMovie),
+	FOREIGN KEY (fromMember) 	REFERENCES Member
+	ON DELETE CASCADE,
+	FOREIGN KEY (toMovie)		REFERENCES Movie
+	ON DELETE CASCADE,
+	CHECK (rate BETWEEN 0 AND 10)
+);
+
+
+CREATE TABLE RateActor (
+	fromMember	INT,
+	toActor		INT,
+	rate		NUMERIC(2,0),
+	PRIMARY KEY (fromMember, toActor),
+	FOREIGN KEY (fromMember) 	REFERENCES Member
+	ON DELETE CASCADE,
+	FOREIGN KEY (toActor)		REFERENCES Actor
+	ON DELETE CASCADE,
+	CHECK (rate BETWEEN 0 AND 10)
+);
+
+
+
+
+
+
+
+
+
+
+
+
